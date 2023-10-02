@@ -1,29 +1,42 @@
 package qupath.ui.cpusampler;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.util.Duration;
 
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-public class CPUSampler {
+public class CPUSampler implements AutoCloseable {
 
-    private static final int SAMPLING_DELAY_MILLISECONDS = 10;
-    private final List<String> threadsToNotTrack;
+    private static final int SAMPLING_DELAY_MILLISECONDS = 50;
+    private static final String SAMPLING_THREAD_NAME = "CPU sampler";
+    private final List<String> threadsToNotTrack = new ArrayList<>();
     private final BooleanProperty running = new SimpleBooleanProperty(true);
-    private final Timeline timeline;
+    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1, r -> new Thread(r, SAMPLING_THREAD_NAME));
     private final Node root = new Node("root", SAMPLING_DELAY_MILLISECONDS);
 
     public CPUSampler(List<String> threadsToNotTrack) {
-        this.threadsToNotTrack = threadsToNotTrack;
+        this.threadsToNotTrack.add(SAMPLING_THREAD_NAME);
+        this.threadsToNotTrack.addAll(threadsToNotTrack);
 
-        timeline = new Timeline(new KeyFrame(Duration.millis(SAMPLING_DELAY_MILLISECONDS), e -> updateNodes()));
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.play();
+        executor.scheduleAtFixedRate(
+                () -> {
+                    if (running.get()) {
+                        updateNodes();
+                    }
+                },
+                0,
+                SAMPLING_DELAY_MILLISECONDS,
+                TimeUnit.MILLISECONDS
+        );
+    }
+
+    @Override
+    public void close() {
+        executor.close();
     }
 
     public Node getRoot() {
@@ -32,12 +45,6 @@ public class CPUSampler {
 
     public void changeRunningState() {
         running.set(!running.get());
-
-        if (running.get()) {
-            timeline.play();
-        } else {
-            timeline.pause();
-        }
     }
 
     public ReadOnlyBooleanProperty isRunning() {

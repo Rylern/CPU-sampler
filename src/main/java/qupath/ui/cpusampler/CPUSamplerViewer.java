@@ -1,6 +1,9 @@
 package qupath.ui.cpusampler;
 
-import javafx.beans.binding.Bindings;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,22 +11,24 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import org.controlsfx.control.CheckComboBox;
 
 import java.io.IOException;
 import java.util.*;
 
-public class CPUSamplerViewer extends VBox {
+public class CPUSamplerViewer extends VBox implements AutoCloseable {
 
     private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ui.cpusampler.strings");
+    private static final int REFRESH_RATE_SECONDS = 1;
     private final CPUSampler cpuSampler;
+    private final HierarchyNode rootItem;
     @FXML private Button pausePlay;
-    @FXML private CheckComboBox<Thread.State> threadStatus;
+    @FXML private CheckComboBox<Thread.State> threadStates;
     @FXML private TreeTableView<Node> tree;
     @FXML private TreeTableColumn<Node, String> stackTraceColumn;
     @FXML private TreeTableColumn<Node, Thread.State> stateColumn;
     @FXML private TreeTableColumn<Node, String> totalTimeColumn;
-    private Thread thread;
 
     public CPUSamplerViewer(List<String> threadsToNotTrack, List<Thread.State> statusToTrack) throws IOException {
         cpuSampler = new CPUSampler(threadsToNotTrack);
@@ -34,25 +39,43 @@ public class CPUSamplerViewer extends VBox {
         loader.setController(this);
         loader.load();
 
-        pausePlay.textProperty().bind(Bindings.when(cpuSampler.isRunning())
-                .then("Pause")
-                .otherwise("Unpause")
-        );
+        pausePlay.setText(cpuSampler.isRunning().get() ? "Pause" : "Unpause");
+        cpuSampler.isRunning().addListener((p, o, n) -> Platform.runLater(() ->
+                pausePlay.setText(n ? "Pause" : "Unpause")
+        ));
 
-        threadStatus.getItems().setAll(Thread.State.values());
+        threadStates.getItems().setAll(Thread.State.values());
         for (Thread.State state: statusToTrack) {
-            threadStatus.getCheckModel().check(state);
+            threadStates.getCheckModel().check(state);
         }
 
-        HierarchyNode rootItem = new HierarchyNode(
+        rootItem = new HierarchyNode(
                 cpuSampler.getRoot(),
-                threadStatus.getCheckModel().getCheckedItems()
+                threadStates.getCheckModel().getCheckedItems()
         );
         tree.setRoot(rootItem);
         rootItem.setExpanded(true);
         stackTraceColumn.setCellValueFactory(node -> new SimpleStringProperty(node.getValue().getValue().getName()));
-        stateColumn.setCellValueFactory(node -> node.getValue().getValue().getState());
-        totalTimeColumn.setCellValueFactory(node -> node.getValue().getValue().getTimeSpent());
+        stateColumn.setCellValueFactory(node -> new SimpleObjectProperty<>(node.getValue().getValue().getState()));
+        totalTimeColumn.setCellValueFactory(node -> new SimpleStringProperty(node.getValue().getValue().getTimeSpent()));
+
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(REFRESH_RATE_SECONDS), e -> update()));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.playFromStart();
+        cpuSampler.isRunning().addListener((p, o, n) -> Platform.runLater(() -> {
+            if (n) {
+                timeline.play();
+            } else {
+                timeline.pause();
+            }
+        }));
+
+        update();
+    }
+
+    @Override
+    public void close() {
+        cpuSampler.close();
     }
 
     @FXML
@@ -60,19 +83,8 @@ public class CPUSamplerViewer extends VBox {
         cpuSampler.changeRunningState();
     }
 
-    @FXML
-    private void onTest() {
-        if (thread == null) {
-            thread = new Thread(() -> {
-                while (true) {
-                    System.out.println("Infinite loop");
-                }
-            });
-            thread.setName("Infinite loop");
-            thread.start();
-        } else {
-            thread.stop();
-            thread = null;
-        }
+    private void update() {
+        rootItem.update();
+        tree.refresh();
     }
 }

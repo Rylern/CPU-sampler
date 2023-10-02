@@ -1,17 +1,15 @@
 package qupath.ui.cpusampler;
 
-import javafx.beans.property.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Node {
 
-    private final ObservableList<Node> children = FXCollections.observableArrayList();
-    private final StringProperty timeSpentProperty = new SimpleStringProperty("");
-    private final ObjectProperty<Thread.State> state = new SimpleObjectProperty<>(null);
+    private final List<Node> children = new ArrayList<>();
     private final String name;
     private final int samplingDelay;
+    private Thread.State state = null;
     private int timeSpent = 0;
 
     public Node(String name, int samplingDelay) {
@@ -28,24 +26,23 @@ public class Node {
         return name;
     }
 
-    public ReadOnlyStringProperty getTimeSpent() {
-        return timeSpentProperty;
+    public String getTimeSpent() {
+        return timeSpent + " ms";
     }
 
     public void addUsage() {
         timeSpent += samplingDelay;
-        timeSpentProperty.set(timeSpent + " ms");
     }
 
-    public ObservableList<Node> getChildren() {
+    public List<Node> getChildren() {
         return children;
     }
 
-    public ReadOnlyObjectProperty<Thread.State> getState() {
+    public Thread.State getState() {
         return state;
     }
 
     public void setState(Thread.State state) {
-        this.state.set(state);
+        this.state = state;
     }
 }
