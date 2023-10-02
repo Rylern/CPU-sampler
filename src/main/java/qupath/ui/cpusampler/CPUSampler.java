@@ -36,7 +36,7 @@ public class CPUSampler implements AutoCloseable {
 
     @Override
     public void close() {
-        executor.close();
+        executor.shutdown();
     }
 
     public Node getRoot() {
