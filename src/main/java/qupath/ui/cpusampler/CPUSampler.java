@@ -15,7 +15,7 @@ public class CPUSampler implements AutoCloseable {
     private static final String SAMPLING_THREAD_NAME = "CPU sampler";
     private final Collection<String> threadsToNotTrack = new HashSet<>();
     private final BooleanProperty running = new SimpleBooleanProperty(true);
-    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1, r -> new Thread(r, SAMPLING_THREAD_NAME));
+    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, SAMPLING_THREAD_NAME));
     private final Node root = new Node("root", SAMPLING_DELAY_MILLISECONDS);
 
     public CPUSampler(Collection<String> threadsToNotTrack) {
