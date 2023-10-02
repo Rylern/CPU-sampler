@@ -26,23 +26,23 @@ public class Node {
         return name;
     }
 
-    public String getTimeSpent() {
+    public synchronized String getTimeSpent() {
         return timeSpent + " ms";
     }
 
-    public void addUsage() {
+    public synchronized void addUsage() {
         timeSpent += samplingDelay;
     }
 
-    public List<Node> getChildren() {
+    public synchronized List<Node> getChildren() {
         return children;
     }
 
-    public Thread.State getState() {
+    public synchronized Thread.State getState() {
         return state;
     }
 
-    public void setState(Thread.State state) {
+    public synchronized void setState(Thread.State state) {
         this.state = state;
     }
 }

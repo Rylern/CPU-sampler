@@ -20,7 +20,7 @@ import java.util.*;
 public class CPUSamplerViewer extends VBox implements AutoCloseable {
 
     private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ui.cpusampler.strings");
-    private static final int REFRESH_RATE_SECONDS = 1;
+    private static final int REFRESH_RATE_MILLISECONDS = 1000;
     private final CPUSampler cpuSampler;
     private final HierarchyNode rootItem;
     @FXML private Button pausePlay;
@@ -30,7 +30,7 @@ public class CPUSamplerViewer extends VBox implements AutoCloseable {
     @FXML private TreeTableColumn<Node, Thread.State> stateColumn;
     @FXML private TreeTableColumn<Node, String> totalTimeColumn;
 
-    public CPUSamplerViewer(List<String> threadsToNotTrack, List<Thread.State> statusToTrack) throws IOException {
+    public CPUSamplerViewer(Collection<String> threadsToNotTrack, Collection<Thread.State> statusToTrack) throws IOException {
         cpuSampler = new CPUSampler(threadsToNotTrack);
 
         var url = CPUSamplerViewer.class.getResource("cpusampler.fxml");
@@ -59,7 +59,7 @@ public class CPUSamplerViewer extends VBox implements AutoCloseable {
         stateColumn.setCellValueFactory(node -> new SimpleObjectProperty<>(node.getValue().getValue().getState()));
         totalTimeColumn.setCellValueFactory(node -> new SimpleStringProperty(node.getValue().getValue().getTimeSpent()));
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(REFRESH_RATE_SECONDS), e -> update()));
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(REFRESH_RATE_MILLISECONDS), e -> update()));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.playFromStart();
         cpuSampler.isRunning().addListener((p, o, n) -> Platform.runLater(() -> {
@@ -69,8 +69,6 @@ public class CPUSamplerViewer extends VBox implements AutoCloseable {
                 timeline.pause();
             }
         }));
-
-        update();
     }
 
     @Override

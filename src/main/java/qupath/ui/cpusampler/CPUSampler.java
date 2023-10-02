@@ -13,12 +13,12 @@ public class CPUSampler implements AutoCloseable {
 
     private static final int SAMPLING_DELAY_MILLISECONDS = 50;
     private static final String SAMPLING_THREAD_NAME = "CPU sampler";
-    private final List<String> threadsToNotTrack = new ArrayList<>();
+    private final Collection<String> threadsToNotTrack = new HashSet<>();
     private final BooleanProperty running = new SimpleBooleanProperty(true);
     private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1, r -> new Thread(r, SAMPLING_THREAD_NAME));
     private final Node root = new Node("root", SAMPLING_DELAY_MILLISECONDS);
 
-    public CPUSampler(List<String> threadsToNotTrack) {
+    public CPUSampler(Collection<String> threadsToNotTrack) {
         this.threadsToNotTrack.add(SAMPLING_THREAD_NAME);
         this.threadsToNotTrack.addAll(threadsToNotTrack);
 
@@ -60,8 +60,8 @@ public class CPUSampler implements AutoCloseable {
             ) {
                 Node node = updateNode(root.getChildren(), entry.getKey().getName());
 
-                for (StackTraceElement stackTraceElement: entry.getValue()) {
-                    node = updateNode(node.getChildren(), stackTraceElement.toString());
+                for (int i=entry.getValue().length-1; i>=0; i--) {
+                    node = updateNode(node.getChildren(), entry.getValue()[i].toString());
                 }
             }
 
