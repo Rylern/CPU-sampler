@@ -1,4 +1,4 @@
-package qupath.ui.cpusampler.gui;
+package qupath.lib.cpusampler.gui;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -8,18 +8,19 @@ import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.controlsfx.control.CheckComboBox;
-import qupath.ui.cpusampler.sampler.CPUSampler;
-import qupath.ui.cpusampler.sampler.Node;
+import qupath.lib.cpusampler.CpuSamplerExtension;
+import qupath.lib.cpusampler.sampler.CPUSampler;
+import qupath.lib.cpusampler.sampler.Node;
 
 import java.io.IOException;
 import java.util.*;
 
-public class CPUSamplerViewer extends VBox implements AutoCloseable {
+public class CPUSamplerViewer extends Stage implements AutoCloseable {
 
-    private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ui.cpusampler.strings");
+    private static final ResourceBundle resources = CpuSamplerExtension.getResources();
     private static final int REFRESH_RATE_MILLISECONDS = 1000;
     private final CPUSampler cpuSampler;
     private HierarchyNode rootItem;

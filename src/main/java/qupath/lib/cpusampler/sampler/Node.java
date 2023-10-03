@@ -1,4 +1,4 @@
-package qupath.ui.cpusampler.sampler;
+package qupath.lib.cpusampler.sampler;
 
 import java.util.ArrayList;
 import java.util.List;

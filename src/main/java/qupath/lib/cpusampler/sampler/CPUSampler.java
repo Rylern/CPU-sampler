@@ -1,4 +1,4 @@
-package qupath.ui.cpusampler.sampler;
+package qupath.lib.cpusampler.sampler;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;

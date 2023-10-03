@@ -1,4 +1,4 @@
-package qupath.ui.cpusampler;
+package qupath.lib.cpusampler;
 
 import qupath.lib.gui.actions.ActionTools;
 import qupath.lib.gui.extensions.QuPathExtension;
@@ -13,9 +13,7 @@ import java.util.ResourceBundle;
 public class CpuSamplerExtension implements QuPathExtension {
 
     private static final Logger logger = LoggerFactory.getLogger(CpuSamplerExtension.class);
-    private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ui.cpusampler.strings");
-    private static final String EXTENSION_NAME = "My Java extension";
-    private static final String EXTENSION_DESCRIPTION = "This is just a demo to show how extensions work";
+    private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.lib.cpusampler.strings");
     private static final Version EXTENSION_QUPATH_VERSION = Version.parse("v0.5.0");
     private boolean isInstalled = false;
 
@@ -25,29 +23,28 @@ public class CpuSamplerExtension implements QuPathExtension {
             logger.debug("{} is already installed", getName());
         } else {
             isInstalled = true;
-            addMenuItem(qupath);
+            MenuTools.addMenuItems(qupath.getMenu("Extensions", false),
+                    ActionTools.createAction(new SamplerStarterAction(), SamplerStarterAction.getMenuTitle())
+            );
         }
     }
 
-    private void addMenuItem(QuPathGUI qupath) {
-        MenuTools.addMenuItems(qupath.getMenu("Extensions", false),
-                ActionTools.createAction(() -> {}, "TEST")
-        );
-    }
-
-
     @Override
     public String getName() {
-        return EXTENSION_NAME;
+        return resources.getString("Extension.name");
     }
 
     @Override
     public String getDescription() {
-        return EXTENSION_DESCRIPTION;
+        return resources.getString("Extension.description");
     }
 
     @Override
     public Version getQuPathVersion() {
         return EXTENSION_QUPATH_VERSION;
+    }
+
+    public static ResourceBundle getResources() {
+        return resources;
     }
 }

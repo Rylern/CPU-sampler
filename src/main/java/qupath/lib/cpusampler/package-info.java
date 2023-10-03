@@ -1,1 +1,1 @@
-package qupath.ui.cpusampler;
+package qupath.lib.cpusampler;

@@ -1,11 +1,11 @@
-package qupath.ui.cpusampler.gui;
+package qupath.lib.cpusampler.gui;
 
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
-import qupath.ui.cpusampler.sampler.Node;
+import qupath.lib.cpusampler.sampler.Node;
 
 public class HierarchyNode extends TreeItem<Node> {
 
