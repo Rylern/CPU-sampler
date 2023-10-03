@@ -8,8 +8,10 @@ import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
+import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import org.controlsfx.control.CheckComboBox;
@@ -26,7 +28,7 @@ public class CPUSamplerViewer extends VBox implements AutoCloseable {
     @FXML private Button pausePlay;
     @FXML private CheckComboBox<Thread.State> threadStates;
     @FXML private TreeTableView<Node> tree;
-    @FXML private TreeTableColumn<Node, String> stackTraceColumn;
+    @FXML private TreeTableColumn<Node, Node> stackTraceColumn;
     @FXML private TreeTableColumn<Node, Thread.State> stateColumn;
     @FXML private TreeTableColumn<Node, String> totalTimeColumn;
 
@@ -55,9 +57,26 @@ public class CPUSamplerViewer extends VBox implements AutoCloseable {
         );
         tree.setRoot(rootItem);
         rootItem.setExpanded(true);
-        stackTraceColumn.setCellValueFactory(node -> new SimpleStringProperty(node.getValue().getValue().getName()));
+        stackTraceColumn.setCellValueFactory(node -> new SimpleObjectProperty<Node>(node.getValue().getValue()));
         stateColumn.setCellValueFactory(node -> new SimpleObjectProperty<>(node.getValue().getValue().getState()));
         totalTimeColumn.setCellValueFactory(node -> new SimpleStringProperty(node.getValue().getValue().getTimeSpent()));
+
+        stackTraceColumn.setCellFactory(column -> new TreeTableCell<>() {
+            @Override
+            public void updateItem(Node item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(item.getName());
+
+                    if (item.getState() != null) {
+                        getStyleClass().add("thread-item");
+                    }
+                }
+            }
+        });
 
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(REFRESH_RATE_MILLISECONDS), e -> update()));
         timeline.setCycleCount(Animation.INDEFINITE);

@@ -5,4 +5,6 @@ module qupath.ui.cpusampler {
     requires org.controlsfx.controls;
 
     opens qupath.ui.cpusampler to javafx.graphics, javafx.fxml;
+    opens qupath.ui.cpusampler.gui to javafx.fxml, javafx.graphics;
+    opens qupath.ui.cpusampler.sampler to javafx.fxml, javafx.graphics;
 }

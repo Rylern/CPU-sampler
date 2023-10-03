@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.controlsfx.control.*?>
+
+<fx:root alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@../styles.css" type="VBox" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox alignment="CENTER">
+         <children>
+            <Button fx:id="pausePlay" mnemonicParsing="false" onAction="#onPausePlayClicked" />
+            <Region HBox.hgrow="ALWAYS" />
+            <CheckComboBox fx:id="threadStates" title="%SamplerViewer.visibleThreads" />
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </HBox>
+      <TreeTableView fx:id="tree" showRoot="false" VBox.vgrow="ALWAYS">
+          <placeholder>
+              <Label text="%SamplerViewer.noContent" />
+          </placeholder>
+        <columns>
+          <TreeTableColumn fx:id="stackTraceColumn" prefWidth="500.0" sortable="false" text="%SamplerViewer.stackTrace" />
+          <TreeTableColumn fx:id="stateColumn" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="%SamplerViewer.state" />
+            <TreeTableColumn fx:id="totalTimeColumn" maxWidth="150.0" minWidth="75.0" prefWidth="75.0" text="%SamplerViewer.totalTime" />
+        </columns>
+      </TreeTableView>
+   </children>
+</fx:root>
