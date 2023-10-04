@@ -58,10 +58,10 @@ public class CPUSampler implements AutoCloseable {
                             entry.getKey().getState().equals(Thread.State.RUNNABLE) &&
                             !this.threadsToNotTrack.contains(entry.getKey().getName())
             ) {
-                Node node = updateNode(root.getChildren(), entry.getKey().getName());
+                Node node = root.getOrCreateChildWithName(entry.getKey().getName());
 
                 for (int i=entry.getValue().length-1; i>=0; i--) {
-                    node = updateNode(node.getChildren(), entry.getValue()[i].toString());
+                    node = node.getOrCreateChildWithName(entry.getValue()[i].toString());
                 }
             }
 
@@ -70,22 +70,5 @@ public class CPUSampler implements AutoCloseable {
                     .findAny()
                     .ifPresent(node -> node.setState(entry.getKey().getState()));
         }
-    }
-
-    private Node updateNode(List<Node> nodes, String elementName) {
-        var existingNode = nodes.stream()
-                .filter(item -> item.getName().equals(elementName))
-                .findAny();
-
-        Node node;
-        if (existingNode.isPresent()) {
-            node = existingNode.get();
-        } else {
-            node = new Node(elementName, SAMPLING_DELAY_MILLISECONDS);
-            nodes.add(node);
-        }
-        node.addUsage();
-
-        return node;
     }
 }

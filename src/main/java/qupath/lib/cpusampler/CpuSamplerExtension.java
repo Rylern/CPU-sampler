@@ -1,5 +1,6 @@
 package qupath.lib.cpusampler;
 
+import qupath.lib.cpusampler.gui.SamplerStarterAction;
 import qupath.lib.gui.actions.ActionTools;
 import qupath.lib.gui.extensions.QuPathExtension;
 import org.slf4j.Logger;

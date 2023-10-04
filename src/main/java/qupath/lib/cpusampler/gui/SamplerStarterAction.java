@@ -1,8 +1,8 @@
-package qupath.lib.cpusampler;
+package qupath.lib.cpusampler.gui;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import qupath.lib.cpusampler.gui.CPUSamplerViewer;
+import qupath.lib.cpusampler.CpuSamplerExtension;
 
 import java.io.IOException;
 import java.util.List;

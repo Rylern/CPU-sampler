@@ -1,6 +1,7 @@
 package qupath.lib.cpusampler.sampler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -35,7 +36,7 @@ public class Node {
     }
 
     public synchronized List<Node> getChildren() {
-        return children;
+        return Collections.unmodifiableList(children);
     }
 
     public synchronized Thread.State getState() {
@@ -44,5 +45,22 @@ public class Node {
 
     public synchronized void setState(Thread.State state) {
         this.state = state;
+    }
+
+    public synchronized Node getOrCreateChildWithName(String childName) {
+        var existingNode = children.stream()
+                .filter(item -> item.getName().equals(childName))
+                .findAny();
+
+        Node node;
+        if (existingNode.isPresent()) {
+            node = existingNode.get();
+        } else {
+            node = new Node(childName, samplingDelay);
+            children.add(node);
+        }
+        node.addUsage();
+
+        return node;
     }
 }
