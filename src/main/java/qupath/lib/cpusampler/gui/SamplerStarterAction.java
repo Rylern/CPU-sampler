@@ -8,6 +8,24 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ResourceBundle;
 
+
+/**
+ * <p>
+ *     Action that starts a {@link CPUSamplerViewer}.
+ * </p>
+ * <p>
+ *     If the CPU sampler viewer doesn't exist, this action creates it. Otherwise,
+ *     the action will simply set the focus input to the viewer.
+ * </p>
+ * <p>
+ *     When started, the CPU sampler viewer will only show {@code RUNNABLE} threads and
+ *     ignore the {@code Reference Handler} thread.
+ * </p>
+ * <p>
+ *     When the user closes the CPU sampler viewer, this action will automatically
+ *     {@link AutoCloseable#close() close} it.
+ * </p>
+ */
 public class SamplerStarterAction implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(SamplerStarterAction.class);
@@ -33,7 +51,10 @@ public class SamplerStarterAction implements Runnable {
         }
     }
 
-    public static String getMenuTitle() {
+    /**
+     * @return the localized title of this action
+     */
+    public static String getActionTitle() {
         return resources.getString("SamplerStarterAction.title");
     }
 }

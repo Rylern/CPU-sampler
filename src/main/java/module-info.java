@@ -1,3 +1,7 @@
+/**
+ * The CPU sampler extension adds a CPU sampling window to QuPath
+ * (see the {@link qupath.lib.cpusampler cpusampler} package).
+ */
 module qupath.ui.cpusampler {
     requires javafx.graphics;
     requires javafx.fxml;

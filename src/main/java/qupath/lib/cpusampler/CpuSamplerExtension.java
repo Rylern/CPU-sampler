@@ -11,6 +11,13 @@ import qupath.lib.gui.tools.MenuTools;
 
 import java.util.ResourceBundle;
 
+/**
+ * <p>Install the CPU sampler extension.</p>
+ * <p>
+ *     It adds one action to the Extensions menu, which starts the CPU sampler window
+ *     (see {@link SamplerStarterAction}).
+ * </p>
+ */
 public class CpuSamplerExtension implements QuPathExtension {
 
     private static final Logger logger = LoggerFactory.getLogger(CpuSamplerExtension.class);
@@ -25,7 +32,7 @@ public class CpuSamplerExtension implements QuPathExtension {
         } else {
             isInstalled = true;
             MenuTools.addMenuItems(qupath.getMenu("Extensions", false),
-                    ActionTools.createAction(new SamplerStarterAction(), SamplerStarterAction.getMenuTitle())
+                    ActionTools.createAction(new SamplerStarterAction(), SamplerStarterAction.getActionTitle())
             );
         }
     }
@@ -45,6 +52,9 @@ public class CpuSamplerExtension implements QuPathExtension {
         return EXTENSION_QUPATH_VERSION;
     }
 
+    /**
+     * @return the resource file containing the localized strings of the application
+     */
     public static ResourceBundle getResources() {
         return resources;
     }
