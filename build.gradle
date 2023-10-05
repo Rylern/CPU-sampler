@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
+    alias(libs.plugins.javafx)
 }
 
 ext.moduleName = 'qupath.extension.cpusampler'
